@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Scraping - Task 05</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #141e30, #243b55);
+            font-family: Arial, sans-serif;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid white;
+            padding: 8px;
+        }
+
+        th {
+            background: #00c853;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #00c853;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00e676;
+        }
+    </style>
+</head>
+<body>
+
+<h2>🕸️ Web Scraping – Product Data</h2>
+<p>Extracting product name, price & rating</p>
+
+<button onclick="fetchData()">Fetch Products</button>
+<button onclick="downloadCSV()">Download CSV</button>
+
+<table id="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price ($)</th>
+            <th>Rating</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+let products = [];
+
+function fetchData() {
+    fetch("https://fakestoreapi.com/products")
+        .then(res => res.json())
+        .then(data => {
+            products = data;
+            displayData();
+        });
+}
+
+function displayData() {
+    let tbody = document.querySelector("tbody");
+    tbody.innerHTML = "";
+
+    products.forEach(p => {
+        let row = `
+            <tr>
+                <td>${p.title}</td>
+                <td>${p.price}</td>
+                <td>${p.rating.rate}</td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function downloadCSV() {
+    let csv = "Name,Price,Rating\n";
+    products.forEach(p => {
+        csv += `"${p.title}",${p.price},${p.rating.rate}\n`;
+    });
+
+    let blob = new Blob([csv], { type: "text/csv" });
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "products.csv";
+    a.click();
+}
+</script>
+
+</body>
+</html>

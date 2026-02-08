@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Number Guessing Game</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .box {
+            background: rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 15px;
+            width: 300px;
+            text-align: center;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            background: #00c853;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .msg {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>🎯 Guess the Number</h2>
+    <p>Guess a number between 1 and 100</p>
+
+    <input type="number" id="guess" placeholder="Enter your guess">
+    <button onclick="checkGuess()">Guess</button>
+
+    <div class="msg" id="message"></div>
+</div>
+
+<script>
+let secretNumber = Math.floor(Math.random() * 100) + 1;
+let attempts = 0;
+
+function checkGuess() {
+    let guess = Number(document.getElementById("guess").value);
+    attempts++;
+
+    if (!guess) {
+        document.getElementById("message").innerHTML = "❌ Enter a valid number";
+        return;
+    }
+
+    if (guess < secretNumber) {
+        document.getElementById("message").innerHTML = "📉 Too low! Try again.";
+    } 
+    else if (guess > secretNumber) {
+        document.getElementById("message").innerHTML = "📈 Too high! Try again.";
+    } 
+    else {
+        document.getElementById("message").innerHTML =
+        `🎉 Correct! You guessed it in <b>${attempts}</b> attempts.`;
+    }
+}
+</script>
+
+</body>
+</html>

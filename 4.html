@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sudoku Solver</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            font-family: Arial, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        table {
+            margin: 15px auto;
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid white;
+        }
+
+        input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #00c853;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #00e676;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🧩 Sudoku Solver</h2>
+
+    <table id="sudoku"></table>
+
+    <button onclick="solveSudoku()">Solve Sudoku</button>
+</div>
+
+<script>
+    const grid = document.getElementById("sudoku");
+
+    // Create Sudoku Grid
+    for (let i = 0; i < 9; i++) {
+        let row = document.createElement("tr");
+        for (let j = 0; j < 9; j++) {
+            let cell = document.createElement("td");
+            let input = document.createElement("input");
+            input.type = "number";
+            input.min = 1;
+            input.max = 9;
+            cell.appendChild(input);
+            row.appendChild(cell);
+        }
+        grid.appendChild(row);
+    }
+
+    function getBoard() {
+        let board = [];
+        for (let i = 0; i < 9; i++) {
+            board[i] = [];
+            for (let j = 0; j < 9; j++) {
+                let value = grid.rows[i].cells[j].firstChild.value;
+                board[i][j] = value === "" ? 0 : Number(value);
+            }
+        }
+        return board;
+    }
+
+    function setBoard(board) {
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                grid.rows[i].cells[j].firstChild.value = board[i][j];
+            }
+        }
+    }
+
+    function isValid(board, row, col, num) {
+        for (let x = 0; x < 9; x++) {
+            if (board[row][x] === num || board[x][col] === num) {
+                return false;
+            }
+        }
+
+        let startRow = row - row % 3;
+        let startCol = col - col % 3;
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[startRow + i][startCol + j] === num) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function solve(board) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (board[row][col] === 0) {
+                    for (let num = 1; num <= 9; num++) {
+                        if (isValid(board, row, col, num)) {
+                            board[row][col] = num;
+                            if (solve(board)) return true;
+                            board[row][col] = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function solveSudoku() {
+        let board = getBoard();
+        if (solve(board)) {
+            setBoard(board);
+            alert("✅ Sudoku Solved!");
+        } else {
+            alert("❌ No solution exists!");
+        }
+    }
+</script>
+
+</body>
+</html>

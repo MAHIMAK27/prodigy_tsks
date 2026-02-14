@@ -1,119 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Contact Management</title>
+    <meta charset="UTF-8">
+    <title>Contact Management System</title>
     <style>
         body {
-            background: linear-gradient(135deg, #2193b0, #6dd5ed);
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: white;
+            background: #f4f6f8;
+            padding: 30px;
         }
-
-        .box {
-            background: rgba(0,0,0,0.3);
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
             padding: 20px;
-            border-radius: 15px;
-            width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-
-        input, button {
+        input {
             width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            border-radius: 5px;
-            border: none;
+            padding: 10px;
+            margin: 8px 0;
         }
-
         button {
-            background: #00c853;
-            color: white;
-            font-size: 15px;
+            padding: 10px;
+            margin-top: 10px;
             cursor: pointer;
+            border: none;
+            border-radius: 4px;
         }
-
-        button:hover {
-            background: #00e676;
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            width: 100%;
         }
-
         .contact {
-            background: rgba(255,255,255,0.2);
-            padding: 8px;
-            margin-top: 8px;
-            border-radius: 5px;
-            font-size: 14px;
+            background: #f1f1f1;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .contact button {
+            margin-right: 5px;
+            background: #2196F3;
+            color: white;
+        }
+        .delete {
+            background: #f44336 !important;
         }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h2>📒 Contact Management</h2>
+<h1>Contact Management System</h1>
 
-    <input type="text" id="name" placeholder="Name">
-    <input type="text" id="phone" placeholder="Phone">
-    <input type="email" id="email" placeholder="Email">
+<div class="container">
+    <input type="text" id="name" placeholder="Enter Name">
+    <input type="text" id="phone" placeholder="Enter Phone Number">
+    <input type="email" id="email" placeholder="Enter Email Address">
 
-    <button onclick="addContact()">Add Contact</button>
+    <button class="add-btn" onclick="saveContact()">Save Contact</button>
 
-    <h3>📋 Contact List</h3>
     <div id="contactList"></div>
 </div>
 
 <script>
     let contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+    let editIndex = null;
 
-    function addContact() {
-        let name = document.getElementById("name").value;
-        let phone = document.getElementById("phone").value;
-        let email = document.getElementById("email").value;
+    function saveContact() {
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const email = document.getElementById("email").value.trim();
 
-        if (name === "" || phone === "" || email === "") {
+        if (!name || !phone || !email) {
             alert("Please fill all fields");
             return;
         }
 
-        contacts.push({ name, phone, email });
+        if (editIndex === null) {
+            // Add new contact
+            contacts.push({ name, phone, email });
+        } else {
+            // Update existing contact
+            contacts[editIndex] = { name, phone, email };
+            editIndex = null;
+        }
+
         localStorage.setItem("contacts", JSON.stringify(contacts));
-
-        document.getElementById("name").value = "";
-        document.getElementById("phone").value = "";
-        document.getElementById("email").value = "";
-
+        clearInputs();
         displayContacts();
     }
 
     function displayContacts() {
-        let list = document.getElementById("contactList");
+        const list = document.getElementById("contactList");
         list.innerHTML = "";
 
-        contacts.forEach((c, index) => {
+        contacts.forEach((contact, index) => {
             list.innerHTML += `
                 <div class="contact">
-                    <b>${c.name}</b><br>
-                    📞 ${c.phone}<br>
-                    ✉️ ${c.email}<br>
+                    <strong>${contact.name}</strong><br>
+                    📞 ${contact.phone}<br>
+                    ✉️ ${contact.email}<br><br>
                     <button onclick="editContact(${index})">Edit</button>
+                    <button class="delete" onclick="deleteContact(${index})">Delete</button>
                 </div>
             `;
         });
     }
 
     function editContact(index) {
-        let c = contacts[index];
+        const contact = contacts[index];
+        document.getElementById("name").value = contact.name;
+        document.getElementById("phone").value = contact.phone;
+        document.getElementById("email").value = contact.email;
+        editIndex = index;
+    }
 
-        let name = prompt("Edit Name:", c.name);
-        let phone = prompt("Edit Phone:", c.phone);
-        let email = prompt("Edit Email:", c.email);
+    function deleteContact(index) {
+        contacts.splice(index, 1);
+        localStorage.setItem("contacts", JSON.stringify(contacts));
+        displayContacts();
+    }
 
-        if (name && phone && email) {
-            contacts[index] = { name, phone, email };
-            localStorage.setItem("contacts", JSON.stringify(contacts));
-            displayContacts();
-        }
+    function clearInputs() {
+        document.getElementById("name").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("email").value = "";
     }
 
     displayContacts();
@@ -121,3 +138,4 @@
 
 </body>
 </html>
+
